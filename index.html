@@ -11,8 +11,78 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<style>
+        .fares-table {
+            font-family: sans-serif
+        }
+
+`        .fares-table__header--od {
+            min-width: 320px
+        }
+
+        .fares-table__header--price {
+            min-width: 220px
+        }
+
+        .fares-table__origin {
+            display: block
+        }
+
+        .fares-table__destination {
+            display: block
+        }
+
+        .fares-table__price {
+            font-size: 1.25em;
+            margin-right: 5px
+        }
+
+        .fares-table__legs {
+            font-size: .85em
+        }
+
+        .fares-table__book-btn {
+            background-color: #ce0c88;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: .85em
+        }
+
+        .fares-table__book-btn:hover {
+            background-color: #e60d98
+        }
+    		</style>
+
 	</head>
 	<body class="is-preload">
+		<script>
+    var XCHECK_CONFIG = {
+        container: "#fares-table",
+        endpoint: "https://aeromexico-api.xcheck.co/v2/tables/4d4b998a-9548-402b-a3ed-cc5e945ea1b8",
+        dynamicContents: [
+            {
+                content: "Travel Dates: {{dateStart}} - {{dateEnd}} ({{calculationDays}})",
+                container: "#intro",
+                additionalContext: (data) => {
+                    const dateStart = new Date(Math.min.apply(null, data.data.filter((row) => !!row.date_start).map((row) => new Date(row.date_start))));
+                    const dateEnd = new Date(Math.max.apply(null, data.data.filter((row) => !!row.date_end).map((row) => new Date(row.date_end))));
+                    const calculationDays = data.data.filter((row) => !!row.calculation_days)[0].calculation_days;
+                    return {
+                        dateStart: dateStart.toLocaleDateString(),
+                        dateEnd: dateEnd.toLocaleDateString(),
+                        calculationDays: calculationDays,
+                    }
+                }
+            },
+            {
+                content: "{{#each rows}}<p>{{{this.terms}}}</p>{{/each}}",
+                container: "#terms-and-conditions"
+            }
+        ]
+    };
+</script>
+
 
 		<!-- Wrapper -->
 			<div id="wrapper">
@@ -81,6 +151,9 @@
 									<li><a href="https://public.tableau.com/profile/jeffrey.zhu#!/" class="icon fa-plus"><span class="label">Tableau</span></a></li>
 								</ul>
 							</article>
+						<!--Table-->
+							<article id="table">
+								<div id="fares-table"></div>
 
 						<!-- Elements -->
 							<article id="elements">
